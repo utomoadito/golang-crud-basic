@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 
 	"crud_tutor/config"
 	"crud_tutor/models"
+
+	"github.com/gorilla/mux"
 )
 
 // AllEmployees export functions
@@ -28,7 +30,38 @@ func AllEmployees(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		if err := rows.Scan(&employees.ID, &employees.Name, &employees.City, &employees.Phone); err != nil {
 			log.Fatal(err.Error())
+		} else {
+			arrEmployee = append(arrEmployee, employees)
+		}
+	}
 
+	response.Status = 1
+	response.Message = "Success"
+	response.Data = arrEmployee
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetEmployee export functions
+func GetEmployee(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var employees models.Employees
+	var arrEmployee []models.Employees
+	var response models.EmployeeResponse
+
+	db, err := config.Connect()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id,name,city,phone FROM employees WHERE id = ?", params["id"])
+	if err != nil {
+		log.Print(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(&employees.ID, &employees.Name, &employees.City, &employees.Phone); err != nil {
+			log.Fatal(err.Error())
 		} else {
 			arrEmployee = append(arrEmployee, employees)
 		}

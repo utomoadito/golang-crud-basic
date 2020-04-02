@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"crud_tutor/config"
-	"crud_tutor/controllers"
+	"crud_tutor/handlers"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -19,8 +19,9 @@ func main() {
 	router.HandleFunc("/products", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Ini Produk"))
 	})
-	router.HandleFunc("/employees", controllers.AllEmployees).Methods("GET")
-	router.HandleFunc("/employees", controllers.AddEmployees).Methods("POST")
+	router.HandleFunc("/employees", handlers.AllEmployees).Methods("GET")
+	router.HandleFunc("/employees/{id}", handlers.GetEmployee).Methods("GET")
+	router.HandleFunc("/employees", handlers.AddEmployees).Methods("POST")
 	router.HandleFunc("/", handlerIndex)
 	http.HandleFunc("/index", handlerIndex)
 	http.HandleFunc("/hello", handlerHello)
